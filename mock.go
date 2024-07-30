@@ -5,20 +5,20 @@ type awsToolsMockReturnValue[U any] struct {
 	Error error
 }
 
-type awsToolMock[T any, U any] struct {
+type AwsToolMock[T any, U any] struct {
 	generalError error
 	inputParams  []T
 	returnValues []awsToolsMockReturnValue[U]
 }
 
-func GetMock[T any, U any](generalError error) *awsToolMock[T, U] {
-	return &awsToolMock[T, U]{
+func GetMock[T any, U any](generalError error) *AwsToolMock[T, U] {
+	return &AwsToolMock[T, U]{
 		generalError: generalError,
 		inputParams:  []T{},
 	}
 }
 
-func (mock *awsToolMock[T, U]) AddInput(i T) {
+func (mock *AwsToolMock[T, U]) AddInput(i T) {
 	if mock.inputParams == nil {
 		mock.inputParams = []T{}
 	}
@@ -26,19 +26,19 @@ func (mock *awsToolMock[T, U]) AddInput(i T) {
 	mock.inputParams = append(mock.inputParams, i)
 }
 
-func (mock awsToolMock[T, U]) GetInputs() []T {
+func (mock AwsToolMock[T, U]) GetInputs() []T {
 	return mock.inputParams
 }
 
-func (mock awsToolMock[T, U]) HasBeenCalled() int {
+func (mock AwsToolMock[T, U]) HasBeenCalled() int {
 	return len(mock.inputParams)
 }
 
-func (mock awsToolMock[T, U]) GetInput(position int) T {
+func (mock AwsToolMock[T, U]) GetInput(position int) T {
 	return mock.inputParams[position]
 }
 
-func (mock *awsToolMock[T, U]) AddReturnValue(value *U) {
+func (mock *AwsToolMock[T, U]) AddReturnValue(value *U) {
 	if mock.returnValues == nil {
 		mock.returnValues = []awsToolsMockReturnValue[U]{}
 	}
@@ -48,7 +48,7 @@ func (mock *awsToolMock[T, U]) AddReturnValue(value *U) {
 	})
 }
 
-func (mock *awsToolMock[T, U]) prepareReturnArray(position int) {
+func (mock *AwsToolMock[T, U]) prepareReturnArray(position int) {
 	if mock.returnValues == nil {
 		mock.returnValues = []awsToolsMockReturnValue[U]{}
 	}
@@ -65,7 +65,7 @@ func (mock *awsToolMock[T, U]) prepareReturnArray(position int) {
 	}
 }
 
-func (mock *awsToolMock[T, U]) SetReturnValue(position int, value *U) {
+func (mock *AwsToolMock[T, U]) SetReturnValue(position int, value *U) {
 	mock.prepareReturnArray(position)
 
 	if position < len(mock.returnValues) {
@@ -79,7 +79,7 @@ func (mock *awsToolMock[T, U]) SetReturnValue(position int, value *U) {
 	}
 }
 
-func (mock *awsToolMock[T, U]) AddError(err error) {
+func (mock *AwsToolMock[T, U]) AddError(err error) {
 	if mock.returnValues == nil {
 		mock.returnValues = []awsToolsMockReturnValue[U]{}
 	}
@@ -89,7 +89,7 @@ func (mock *awsToolMock[T, U]) AddError(err error) {
 	})
 }
 
-func (mock *awsToolMock[T, U]) SetError(position int, err error) {
+func (mock *AwsToolMock[T, U]) SetError(position int, err error) {
 	mock.prepareReturnArray(position)
 
 	if position < len(mock.returnValues) {
@@ -103,7 +103,7 @@ func (mock *awsToolMock[T, U]) SetError(position int, err error) {
 	}
 }
 
-func (mock *awsToolMock[T, U]) GetNextResult() (*U, error) {
+func (mock *AwsToolMock[T, U]) GetNextResult() (*U, error) {
 	if mock.returnValues == nil {
 		return nil, mock.generalError
 	}
@@ -126,7 +126,7 @@ func (mock *awsToolMock[T, U]) GetNextResult() (*U, error) {
 	return x.Value, nil
 }
 
-func (mock *awsToolMock[T, U]) Reset() {
+func (mock *AwsToolMock[T, U]) Reset() {
 	mock.returnValues = nil
 	mock.inputParams = []T{}
 }
