@@ -8,6 +8,7 @@ type toolsMockReturnValue[U any] struct {
 type ToolMock[T any, U any] struct {
 	generalError error
 	inputParams  []T
+	alwaysReturn *U
 	returnValues []toolsMockReturnValue[U]
 }
 
@@ -65,6 +66,10 @@ func (mock *ToolMock[T, U]) prepareReturnArray(position int) {
 	}
 }
 
+func (mock *ToolMock[T, U]) SetAlwaysReturn(value U) {
+	mock.alwaysReturn = &value
+}
+
 func (mock *ToolMock[T, U]) SetReturnValue(position int, value *U) {
 	mock.prepareReturnArray(position)
 
@@ -104,6 +109,9 @@ func (mock *ToolMock[T, U]) SetError(position int, err error) {
 }
 
 func (mock *ToolMock[T, U]) GetNextResult() (*U, error) {
+	if mock.alwaysReturn != nil {
+		return mock.alwaysReturn, nil
+	}
 	if mock.returnValues == nil {
 		return nil, mock.generalError
 	}
@@ -129,4 +137,5 @@ func (mock *ToolMock[T, U]) GetNextResult() (*U, error) {
 func (mock *ToolMock[T, U]) Reset() {
 	mock.returnValues = nil
 	mock.inputParams = []T{}
+	mock.alwaysReturn = nil
 }
