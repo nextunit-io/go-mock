@@ -156,6 +156,44 @@ func TestMockSetAlwaysReturn(t *testing.T) {
 	assert.Equal(t, "test-alwaysreturn", *output)
 }
 
+func TestMockSetAlwaysReturnFn(t *testing.T) {
+	mock := gomock.GetMock[string, string](fmt.Errorf("general error"))
+	mock.SetAlwaysReturnFn(func() (*string, error) {
+		r := "test-alwaysreturnfn"
+		return &r, nil
+	})
+
+	output, err := mock.GetNextResult()
+
+	assert.Nil(t, err)
+	assert.Equal(t, "test-alwaysreturnfn", *output)
+
+	for i := 0; i < 6; i++ {
+		v := fmt.Sprintf("test-old-%d", i)
+		mock.AddReturnValue(&v)
+	}
+
+	for i := 0; i < 4; i++ {
+		if i%2 == 0 {
+			mock.SetError(i*2, fmt.Errorf("test-error-%d", i))
+		} else {
+			v := fmt.Sprintf("test-output-%d", i)
+			mock.SetReturnValue(i*2, &v)
+		}
+	}
+
+	for i := 0; i < 8; i++ {
+		output, err := mock.GetNextResult()
+
+		assert.Nil(t, err)
+		assert.Equal(t, "test-alwaysreturnfn", *output)
+	}
+
+	output, err = mock.GetNextResult()
+	assert.Nil(t, err)
+	assert.Equal(t, "test-alwaysreturnfn", *output)
+}
+
 func TestMockReset(t *testing.T) {
 	mock := gomock.GetMock[string, string](fmt.Errorf("general error"))
 
@@ -176,6 +214,21 @@ func TestMockReset(t *testing.T) {
 	assert.Equal(t, "test-alwaysreturn", *output)
 
 	assert.Equal(t, 4, mock.HasBeenCalled())
+	mock.Reset()
+
+	assert.Equal(t, 0, mock.HasBeenCalled())
+	output, err = mock.GetNextResult()
+	assert.Nil(t, output)
+	assert.Equal(t, fmt.Errorf("general error"), err)
+
+	mock.SetAlwaysReturnFn(func() (*string, error) {
+		r := "test-alwaysreturnfn"
+		return &r, nil
+	})
+	output, err = mock.GetNextResult()
+	assert.Nil(t, err)
+	assert.Equal(t, "test-alwaysreturnfn", *output)
+
 	mock.Reset()
 
 	assert.Equal(t, 0, mock.HasBeenCalled())
