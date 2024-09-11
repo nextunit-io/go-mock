@@ -13,12 +13,15 @@ func TestMockInput(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		mock.AddInput(fmt.Sprintf("test-input-%d", i))
+
+		assert.Equal(t, fmt.Sprintf("test-input-%d", i), mock.GetLastInput())
 	}
 
 	assert.Equal(t, 3, mock.HasBeenCalled())
 	assert.Equal(t, "test-input-0", mock.GetInput(0))
 	assert.Equal(t, "test-input-1", mock.GetInput(1))
 	assert.Equal(t, "test-input-2", mock.GetInput(2))
+	assert.Equal(t, mock.GetInput(2), mock.GetLastInput())
 
 	assert.Equal(t, []string{
 		"test-input-0",

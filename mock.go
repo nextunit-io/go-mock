@@ -40,6 +40,10 @@ func (mock ToolMock[T, U]) GetInput(position int) T {
 	return mock.inputParams[position]
 }
 
+func (mock ToolMock[T, U]) GetLastInput() T {
+	return mock.GetInput(mock.HasBeenCalled() - 1)
+}
+
 func (mock *ToolMock[T, U]) AddReturnValue(value *U) {
 	if mock.returnValues == nil {
 		mock.returnValues = []toolsMockReturnValue[U]{}
